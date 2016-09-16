@@ -32,6 +32,8 @@ var sourcemaps = require('gulp-sourcemaps');
 var plumber = require('gulp-plumber');
 var notify = require("gulp-notify");
 var rimraf = require('rimraf');
+var data = require('gulp-data');
+var path = require('path');
 
 /**
  * 開発用ディレクトリ
@@ -99,6 +101,12 @@ gulp.task('pug', function() {
   }
   return gulp.src(develop.pug)
   .pipe(plumber({errorHandler: notify.onError("Error: <%= error.message %>")}))
+  .pipe(data(function(file) {
+    // 相対パスを求めて locals に格納
+    // todo: 拡張子の変更が必要?
+    locals.relativePath = path.relative(file.base, file.path);
+    return locals;
+  }))
   .pipe(pug({
     // JSONファイルをPugに渡します。
     locals: locals,
